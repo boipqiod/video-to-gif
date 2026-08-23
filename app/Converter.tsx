@@ -11,6 +11,13 @@ function formatTime(seconds: number) {
   return `${mins}:${(seconds % 60).toFixed(1).padStart(4, "0")}`;
 }
 
+function outputDimensions(sourceWidth: number, sourceHeight: number, longEdge: number) {
+  if (!sourceWidth || !sourceHeight) return { width: 0, height: 0 };
+  const scale = Math.min(1, longEdge / Math.max(sourceWidth, sourceHeight));
+  const even = (value: number) => Math.max(2, Math.round(value * scale / 2) * 2);
+  return { width: even(sourceWidth), height: even(sourceHeight) };
+}
+
 function waitFor(video: HTMLVideoElement, event: string) {
   return new Promise<void>((resolve, reject) => {
     const cleanup = () => {
@@ -33,7 +40,9 @@ export default function Converter() {
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(0);
   const [fps, setFps] = useState(12);
-  const [width, setWidth] = useState(480);
+  const [sourceWidth, setSourceWidth] = useState(0);
+  const [sourceHeight, setSourceHeight] = useState(0);
+  const [longEdge, setLongEdge] = useState(720);
   const [quality, setQuality] = useState(128);
   const [gifUrl, setGifUrl] = useState("");
   const [gifSize, setGifSize] = useState(0);
@@ -61,9 +70,10 @@ export default function Converter() {
     if (!video) return;
     const total = video.duration;
     setDuration(total);
+    setSourceWidth(video.videoWidth);
+    setSourceHeight(video.videoHeight);
     setStart(0);
     setEnd(Math.min(total, 5));
-    setWidth(Math.min(640, video.videoWidth || 480));
   };
 
   const onDrop = (event: DragEvent<HTMLDivElement>) => {
@@ -82,9 +92,7 @@ export default function Converter() {
     setError("");
     setProgress(0);
     try {
-      const ratio = video.videoHeight / video.videoWidth;
-      const outputWidth = Math.max(120, Math.min(width, video.videoWidth));
-      const outputHeight = Math.max(2, Math.round(outputWidth * ratio / 2) * 2);
+      const { width: outputWidth, height: outputHeight } = outputDimensions(video.videoWidth, video.videoHeight, longEdge);
       const canvas = document.createElement("canvas");
       canvas.width = outputWidth;
       canvas.height = outputHeight;
@@ -123,8 +131,11 @@ export default function Converter() {
   const reset = () => {
     if (videoUrl) URL.revokeObjectURL(videoUrl);
     if (gifUrl) URL.revokeObjectURL(gifUrl);
-    setFile(null); setVideoUrl(""); setGifUrl(""); setDuration(0); setError(""); setProgress(0);
+    setFile(null); setVideoUrl(""); setGifUrl(""); setDuration(0); setSourceWidth(0); setSourceHeight(0); setError(""); setProgress(0);
   };
+
+  const output = outputDimensions(sourceWidth, sourceHeight, longEdge);
+  const isPortrait = sourceHeight > sourceWidth;
 
   return (
     <main>
@@ -146,15 +157,18 @@ export default function Converter() {
           <div className="editor">
             <div className="preview-panel">
               <div className="panel-heading"><div><span className="step">01</span><h2>미리보기</h2></div><button className="text-button" type="button" onClick={reset}>다른 영상</button></div>
-              <div className="media-frame">{gifUrl ? (
-                <img src={gifUrl} alt="완성된 GIF 미리보기" />
-              ) : <video ref={videoRef} src={videoUrl} controls playsInline muted onLoadedMetadata={onLoaded} />}</div>
-              <div className="file-row"><span className="file-name">{file.name}</span><span>{(file.size / 1024 / 1024).toFixed(1)} MB</span></div>
+              <div className="media-stage">
+                <div className={`media-frame ${isPortrait ? "portrait" : "landscape"}`} style={sourceWidth && sourceHeight ? { aspectRatio: `${sourceWidth} / ${sourceHeight}` } : undefined}>{gifUrl ? (
+                  <img src={gifUrl} alt="완성된 GIF 미리보기" />
+                ) : <video ref={videoRef} src={videoUrl} controls playsInline muted onLoadedMetadata={onLoaded} />}</div>
+              </div>
+              <div className="file-row"><span className="file-name">{file.name}</span><span>{sourceWidth > 0 ? `${isPortrait ? "세로" : "가로"} · ${sourceWidth} × ${sourceHeight}` : `${(file.size / 1024 / 1024).toFixed(1)} MB`}</span></div>
             </div>
             <div className="settings-panel">
               <div className="panel-heading"><div><span className="step">02</span><h2>GIF 설정</h2></div></div>
               <div className="control-group"><label>구간 <span>{formatTime(start)} — {formatTime(end)}</span></label><div className="time-inputs"><input aria-label="시작 시간" type="number" min="0" max={end} step="0.1" value={start.toFixed(1)} onChange={(e) => setStart(Math.max(0, Math.min(Number(e.target.value), end - 0.1)))} /><span>부터</span><input aria-label="종료 시간" type="number" min={start} max={duration} step="0.1" value={end.toFixed(1)} onChange={(e) => setEnd(Math.min(duration, Math.max(Number(e.target.value), start + 0.1)))} /><span>까지</span></div><input className="range" aria-label="종료 시간 슬라이더" type="range" min={Math.min(start + 0.1, duration)} max={duration || 1} step="0.1" value={end} onChange={(e) => setEnd(Number(e.target.value))} /></div>
-              <div className="two-controls"><div className="control-group"><label htmlFor="fps">프레임</label><select id="fps" value={fps} onChange={(e) => setFps(Number(e.target.value))}><option value="8">8 FPS · 작게</option><option value="12">12 FPS · 균형</option><option value="16">16 FPS · 부드럽게</option></select></div><div className="control-group"><label htmlFor="size">가로 크기</label><select id="size" value={width} onChange={(e) => setWidth(Number(e.target.value))}><option value="320">320 px</option><option value="480">480 px</option><option value="640">640 px</option></select></div></div>
+              <div className="two-controls"><div className="control-group"><label htmlFor="fps">프레임</label><select id="fps" value={fps} onChange={(e) => setFps(Number(e.target.value))}><option value="8">8 FPS · 작게</option><option value="12">12 FPS · 균형</option><option value="16">16 FPS · 부드럽게</option></select></div><div className="control-group"><label htmlFor="size">긴 변 크기 <span>{output.width > 0 ? `${output.width} × ${output.height}` : "원본 비율"}</span></label><select id="size" value={longEdge} onChange={(e) => setLongEdge(Number(e.target.value))}><option value="480">480 px · 작게</option><option value="720">720 px · 균형</option><option value="960">960 px · 선명하게</option></select></div></div>
+              <div className="ratio-note"><span>{isPortrait ? "↕" : "↔"}</span><div><strong>{isPortrait ? "세로 영상" : "가로 영상"} 감지</strong><p>자르거나 늘리지 않고 원본 비율 그대로 만들어요.</p></div></div>
               <div className="control-group"><label htmlFor="colors">색상 <span>{quality} colors</span></label><input id="colors" className="range" type="range" min="64" max="256" step="64" value={quality} onChange={(e) => setQuality(Number(e.target.value))} /></div>
               {error && <p className="error" role="alert">{error}</p>}{busy && <div className="progress"><span style={{ width: `${progress}%` }} /><b>{progress}%</b></div>}
               {gifUrl ? <div className="success-box"><div><strong>GIF가 완성됐어요</strong><span>{(gifSize / 1024 / 1024).toFixed(1)} MB</span></div><a className="primary" href={gifUrl} download={`${file.name.replace(/\.[^.]+$/, "")}.gif`}>GIF 다운로드 ↓</a><button className="again" type="button" onClick={() => { URL.revokeObjectURL(gifUrl); setGifUrl(""); setProgress(0); }}>설정 다시 바꾸기</button></div> : <button className="primary convert" type="button" onClick={createGif} disabled={busy || !duration}>{busy ? "GIF를 만들고 있어요…" : "GIF 만들기  →"}</button>}
