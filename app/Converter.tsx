@@ -140,12 +140,12 @@ export default function Converter() {
   return (
     <main>
       <nav className="nav">
-        <a className="brand" href="#top" aria-label="Looply 홈"><span className="brand-mark">L</span>Looply</a>
-        <span className="privacy"><span className="status-dot" />파일은 기기 밖으로 나가지 않아요</span>
+        <a className="brand" href="#/" aria-label="Simon's Tools 홈"><span className="brand-mark">S</span>Simon&apos;s Tools</a>
+        <a className="back-link" href="#/">← 모든 도구</a>
       </nav>
       <section className="hero" id="top">
-        <div className="eyebrow">VIDEO → GIF, SIMPLIFIED</div>
-        <h1>움직이는 순간을<br /><em>가볍게</em> 공유하세요.</h1>
+        <div className="eyebrow">MEDIA TOOL / 01</div>
+        <h1>Video를<br /><em>GIF로.</em></h1>
         <p>영상의 필요한 부분만 골라 선명한 GIF로 바꿔보세요.<br />업로드 없이, 이 브라우저 안에서 바로 완성됩니다.</p>
       </section>
       <section className={`studio ${file ? "has-file" : ""}`}>
@@ -176,7 +176,7 @@ export default function Converter() {
         )}
         <input ref={inputRef} className="hidden-input" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" onChange={(e: ChangeEvent<HTMLInputElement>) => loadFile(e.target.files?.[0])} />
       </section>
-      <footer><span>빠르게, 예쁘게, 그리고 안전하게.</span><span>LOOPLY / 2026</span></footer>
+      <footer><span>빠르게, 예쁘게, 그리고 안전하게.</span><span>SIMON&apos;S TOOLS / 2026</span></footer>
     </main>
   );
 }

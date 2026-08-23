@@ -2,7 +2,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/video-to-gif/",
+  base: "/simons-tools/",
   plugins: [react()],
   build: {
     outDir: "pages-dist",
