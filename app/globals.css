@@ -48,10 +48,6 @@ h1 em:after { content:""; position:absolute; left:-2%; right:-3%; bottom:2%; hei
 .range { width:100%; accent-color:var(--ink); cursor:pointer; }
 .two-controls { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 select { width:100%; border:1px solid var(--ink); background:white; padding:11px; }
-.ratio-note { display:flex; gap:12px; align-items:center; margin-top:2px; padding:13px 14px; background:#edf7d0; border:1px solid #b9c68f; }
-.ratio-note > span { width:30px; height:30px; flex:0 0 auto; display:grid; place-items:center; border:1px solid var(--ink); border-radius:50%; background:var(--lime); font-weight:900; }
-.ratio-note strong { display:block; font-size:12px; margin-bottom:3px; }
-.ratio-note p { margin:0; color:var(--muted); font-size:11px; line-height:1.4; }
 .primary { width:100%; border:1px solid var(--ink); background:var(--lime); color:var(--ink); padding:16px; font-weight:900; text-decoration:none; display:block; text-align:center; cursor:pointer; box-shadow:4px 4px 0 var(--ink); transition:.15s; }
 .primary:hover { transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
 .primary:disabled { opacity:.5; cursor:not-allowed; }
