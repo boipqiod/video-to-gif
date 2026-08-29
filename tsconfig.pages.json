@@ -3,6 +3,6 @@
   "compilerOptions": {
     "incremental": false
   },
-  "include": ["app/Converter.tsx", "src/**/*.tsx", "types/**/*.d.ts", "vite.pages.config.ts"],
+  "include": ["app/Converter.tsx", "app/App.tsx", "app/FileConverter.tsx", "src/**/*.tsx", "src/**/*.d.ts", "types/**/*.d.ts", "vite.pages.config.ts"],
   "exclude": ["node_modules", "db", "worker", "dist", "pages-dist"]
 }

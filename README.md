@@ -6,10 +6,10 @@ Files are processed locally and never leave your device.
 ## Tools
 
 - Video to GIF — choose a clip, frame rate, size, and color count
+- Universal Converter — convert PDF, HEIC/HEIF, JPG, PNG, and WebP into JPG, PNG, WebP, or PDF
 - Image Compressor — coming soon
 - Image Resizer — coming soon
-- Format Converter — coming soon
-- Images to PDF — coming soon
+- PDF Toolkit — coming soon
 - QR Code Maker — coming soon
 
 ## Run locally

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Converter from "./Converter";
+import FileConverter from "./FileConverter";
 
 type Category = "All" | "Video" | "Image" | "Document" | "Text";
 
@@ -7,8 +8,8 @@ const tools = [
   { id: "video-to-gif", name: "Video to GIF", description: "Turn the best part of any video into a lightweight GIF", category: "Video" as Category, mark: "GIF", tone: "lime", ready: true },
   { id: "image-compressor", name: "Image Compressor", description: "Shrink file size while keeping your images crisp", category: "Image" as Category, mark: "ZIP", tone: "blue", ready: false },
   { id: "image-resizer", name: "Image Resizer", description: "Resize pixels and proportions in a few clicks", category: "Image" as Category, mark: "↗", tone: "orange", ready: false },
-  { id: "format-converter", name: "Format Converter", description: "Convert between PNG, JPG, and WebP", category: "Image" as Category, mark: "WEBP", tone: "pink", ready: false },
-  { id: "pdf-maker", name: "Images to PDF", description: "Combine multiple images into a single PDF", category: "Document" as Category, mark: "PDF", tone: "yellow", ready: false },
+  { id: "file-converter", name: "Universal Converter", description: "Convert PDF, HEIC, JPG, PNG, WebP, and more", category: "Image" as Category, mark: "↔", tone: "pink", ready: true },
+  { id: "pdf-toolkit", name: "PDF Toolkit", description: "Merge, split, and reorder PDF pages", category: "Document" as Category, mark: "PDF", tone: "yellow", ready: false },
   { id: "qr-maker", name: "QR Code Maker", description: "Turn any link or text into a QR code", category: "Text" as Category, mark: "QR", tone: "violet", ready: false },
 ];
 
@@ -51,7 +52,7 @@ function Dashboard() {
 
         <div className="dashboard-hero">
           <div><span className="dashboard-date">SIMON&apos;S PICKS · 2026</span><h1>Handy tools,<br /><em>right when</em> you need them.</h1><p>No installs. No sign-ups. Drop in your file<br />and everything happens right in your browser.</p></div>
-          <div className="hero-stamp"><span>01</span><strong>READY<br />TO USE</strong></div>
+          <div className="hero-stamp"><span>02</span><strong>READY<br />TO USE</strong></div>
         </div>
 
         <div className="tools-heading"><div><h2>{category === "All" ? "All tools" : `${category} tools`}</h2><span>{visibleTools.length.toString().padStart(2, "0")} TOOLS</span></div><p>More useful tools are on the way.</p></div>
@@ -75,5 +76,7 @@ function Dashboard() {
 
 export default function App() {
   const route = useHashRoute();
-  return route === "video-to-gif" ? <Converter /> : <Dashboard />;
+  if (route === "video-to-gif") return <Converter />;
+  if (route === "file-converter") return <FileConverter />;
+  return <Dashboard />;
 }
